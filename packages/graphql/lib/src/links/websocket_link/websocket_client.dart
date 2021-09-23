@@ -167,6 +167,9 @@ class SocketClient {
   final HashMap<String, SubscriptionListener> _subscriptionInitializers =
       HashMap();
 
+  List<Request> _currentSubscriptionRequests = [];
+  List<Request> get currentSubscriptionRequests => _currentSubscriptionRequests;
+
   bool _connectionWasLost = false;
 
   Timer? _reconnectTimer;
@@ -288,6 +291,12 @@ class SocketClient {
         Timer.run(() => _connect());
       }
     }
+  }
+
+  Future<List<Request>> reconnect() async {
+    await dispose();
+
+    return currentSubscriptionRequests;
   }
 
   /// Closes the underlying socket if connected, and stops reconnection attempts.
@@ -437,6 +446,7 @@ class SocketClient {
     };
 
     _subscriptionInitializers[id] = SubscriptionListener(onListen, false);
+    _currentSubscriptionRequests.add(payload);
 
     return response.stream;
   }
