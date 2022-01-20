@@ -385,6 +385,11 @@ class SocketClient {
     }
   }
 
+  void renewConnection() {
+    socketChannel!.sink.close(ws_status.goingAway);
+    _connectionStateController.add(SocketConnectionState.notConnected);
+  }
+
   /// Sends a query, mutation or subscription request to the server, and returns a stream of the response.
   ///
   /// If the request is a query or mutation, a timeout will be applied to the request as specified by
